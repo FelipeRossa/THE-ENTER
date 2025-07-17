@@ -1,0 +1,7 @@
+
+<div class="desktop">
+    <div class="menu-card" *ngFor="let item of menuItems" [routerLink]="item.path" routerLinkActive="active">
+        <i [class]="item.icon"></i>
+        <span>{{ item.label }}</span>
+    </div>
+</div>

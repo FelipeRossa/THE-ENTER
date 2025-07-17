@@ -1,0 +1,15 @@
+<nav class="navbar">
+  <div class="title-sistem" routerLink="/menu" routerLinkActive="active">
+    <i class="bi bi-box-arrow-in-right enter-icon"></i>
+    <span class="title">THE ENTER</span>
+  </div>
+  <div class="btn-tema" (click)="toggleTheme()" title="Alternar tema">
+    <i
+      class="bi"
+      [ngClass]="isDark ? 'bi-moon-fill' : 'bi-sun-fill'"
+      [ngStyle]="{
+        color: isDark ? pastelCyan : pastelYellow
+      }"
+    ></i>
+  </div>
+</nav>

@@ -1,0 +1,43 @@
+/* You can add global styles to this file, and also import other style files */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  background-color: #1c1c1c; /* opcional para combinar com o menu */
+  font-family: sans-serif;
+}
+
+/* Tema claro (padrão) */
+:root {
+  --bg-color: #e2e2e2;
+  --card-bg: #ffffff;
+  --text-color: #1c1c1c;
+  --hover-shadow: rgba(0, 0, 0, 0.15);
+}
+
+/* Tema escuro */
+body.dark {
+  --bg-color: #1c1c1c;
+  --card-bg: #2e2e2e;
+  --text-color: #ffffff;
+  --hover-shadow: rgba(255, 255, 255, 0.15);
+}
+
+/* Reset base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: sans-serif;
+  padding-top: 60px;
+
+}

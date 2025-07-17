@@ -1,0 +1,73 @@
+.hosts-page {
+  padding: 20px;
+  color: var(--text-color);
+  min-height: calc(100vh - 60px); // espaço para navbar
+
+  .header {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    input {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background-color: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    .new-host-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+  }
+
+  .host-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .host-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      border-radius: 8px;
+      background-color: var(--card-bg);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+
+      &.teste {
+        color: #ffe580; // amarelo pastel
+      }
+      &.dev {
+        color: #80ff95; // verde pastel
+      }
+      &.prod {
+        color: #ff8080; // vermelho pastel
+      }
+
+      button {
+        background: none;
+        border: 1px solid var(--text-color);
+        color: var(--text-color);
+        border-radius: 6px;
+        padding: 4px 10px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: var(--text-color);
+          color: var(--bg-color);
+        }
+      }
+    }
+  }
+}

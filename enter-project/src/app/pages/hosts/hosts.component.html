@@ -1,0 +1,61 @@
+<div class="hosts-page">
+    <div class="header">
+        <input type="text" placeholder="Pesquisar por IP ou host..." [(ngModel)]="search" (input)="filterHosts()" />
+        <button class="new-host-btn" (click)="novoGrupoHost()">Novo Host</button>
+    </div>
+
+    <div class="host-list">
+        <div class="table-responsive" *ngFor="let grupo of filteredHosts">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th colspan="6" class="d-flex justify-content-between align-items-center">
+                            <span>
+                                {{ grupo.titulo }}
+                                <span class="badge" [ngStyle]="{ 'background-color': grupo.corExadecimal }">
+                                    {{ grupo.corExadecimal }}
+                                </span>
+                            </span>
+                            <span>
+                                <button class="btn btn-sm btn-outline-primary me-2" (click)="ligaDesligaGrupo(grupo)">
+                                    {{ grupoAtivo(grupo) ? 'Desligar Grupo' : 'Ligar Grupo' }}
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" (click)="editarGrupo(grupo)">
+                                    Editar Grupo
+                                </button>
+                            </span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>IP</th>
+                        <th>Host</th>
+                        <th>Comentário</th>
+                        <th>Cor</th>
+                        <th>Ativo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let host of grupo.hosts">
+                        <td>{{ host.IP }}</td>
+                        <td>{{ host.nmHost }}</td>
+                        <td>{{ host.comentario }}</td>
+                        <td>
+                            <span class="badge" [ngStyle]="{ 'background-color': host.corExadecimal }">
+                                {{ host.corExadecimal }}
+                            </span>
+                        </td>
+                        <td>
+                            <input type="checkbox" [(ngModel)]="host.onOff" />
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-info" (click)="editarGrupo(host)">
+                                ✏️
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
