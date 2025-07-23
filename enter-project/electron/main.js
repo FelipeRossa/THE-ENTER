@@ -40,8 +40,6 @@ app.whenReady().then(() => {
     // ao rodar o app, cria a janela
     createWindow();
 
-    // win.webContents.openDevTools();
-
 });
 
 

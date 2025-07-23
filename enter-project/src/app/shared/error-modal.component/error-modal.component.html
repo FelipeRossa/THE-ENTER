@@ -1,0 +1,13 @@
+<div #modalRef class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white py-2">
+                <h5 class="modal-title">{{ modalTitleErr }}</h5>
+                <button type="button" class="btn-close btn-close-white" (click)="close()" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                {{ mensagemErr }}
+            </div>
+        </div>
+    </div>
+</div>

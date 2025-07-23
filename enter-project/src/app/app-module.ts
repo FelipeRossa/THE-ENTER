@@ -7,6 +7,7 @@ import { MenuComponent } from './pages/menu/menu.component';
 import { NavbarComponent } from './shared/navbar.component/navbar.component';
 import { HostsComponent } from './pages/hosts/hosts.component';
 import { FormsModule } from '@angular/forms';
+import { ErrorModalComponent } from './shared/error-modal.component/error-modal.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { FormsModule } from '@angular/forms';
     MenuComponent,
     NavbarComponent,
     HostsComponent,
+    ErrorModalComponent,
   ],
   imports: [
     BrowserModule,

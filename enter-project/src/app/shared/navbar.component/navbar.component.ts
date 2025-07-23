@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 export class NavbarComponent implements OnInit {
   isDark = document.body.classList.contains('dark');;
   pastelCyan = '#7fdbff'; // ciano pastel
-  pastelYellow = '#ffe580'; // amarelo pastel
+  pastelYellow = '#ffe26cff'; // amarelo pastel
 
   constructor(private router: Router) {}
 

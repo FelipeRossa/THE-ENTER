@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ElectronService } from '../../services/electron/electron.service';
 import { GrupoHosts } from '../../models/GrupoHosts';
+import { Host } from '../../models/Host';
 
 @Component({
   selector: 'app-hosts.component',
@@ -9,42 +10,40 @@ import { GrupoHosts } from '../../models/GrupoHosts';
   styleUrl: './hosts.component.scss'
 })
 export class HostsComponent implements OnInit {
+
+  @ViewChild('erroModal') erroModal!: any;
+
   groupsHosts: GrupoHosts[] = [];
   search = '';
   filteredHosts: any[] = [];
+
+  modalTitle = 'Erro';
+  mensagemErro = '';
 
   constructor(private electronService: ElectronService) {
 
   }
 
   async ngOnInit(): Promise<void> {
-    this.groupsHosts = await this.electronService.getHostsContent();
-
-    this.filterHosts();
+    this.loadHosts();
   }
 
   filterHosts(): void {
     const value = this.search.toLowerCase();
     this.filteredHosts = this.groupsHosts.filter(h => h.titulo && h.titulo.toLowerCase().includes(value));
-    debugger
-  }
-
-  getEnvClass(host: string): string {
-    const match = host.split('#')[1]?.trim().toUpperCase();
-    switch (match) {
-      case 'DEV': return 'dev';
-      case 'TESTE': return 'teste';
-      case 'PROD': return 'prod';
-      default: return '';
-    }
   }
 
   ligaDesligaGrupo(grupo: GrupoHosts) {
-    if (grupo.hosts) {
-      const todosAtivos = grupo.hosts.every(h => h.onOff);
-      grupo.hosts.forEach(h => h.onOff = !todosAtivos);
-    }
-    
+    const ativar = !this.grupoAtivo(grupo); // Se está ativo, desliga. Se está desligado, ativa.
+
+    this.electronService.ligarDesligarGrupo(grupo.titulo, ativar).then(async () => {
+      this.groupsHosts = await this.electronService.getHostsContent();
+      this.filterHosts(); // atualiza filtragem se estiver usando
+    }).catch(err => {
+      this.modalTitle = 'Erro ao atualizar grupo: ' + grupo.titulo;
+      this.mensagemErro = err;
+      this.erroModal.open();
+    });
   }
 
   grupoAtivo(grupo: GrupoHosts): boolean {
@@ -53,10 +52,10 @@ export class HostsComponent implements OnInit {
     }
 
     return false;
-    
+
   }
 
-  editarGrupo(grupo: GrupoHosts) {
+  addNovoHost(grupo: GrupoHosts) {
     console.log('Editar grupo:', grupo);
     // futuramente abrir modal
   }
@@ -64,6 +63,29 @@ export class HostsComponent implements OnInit {
   novoGrupoHost(): void {
     // lógica futura para adicionar host
     alert('Novo host!');
+  }
+
+
+  editarHost(grupo: Host) {
+    console.log('Editar grupo:', grupo);
+    // futuramente abrir modal
+  }
+
+  ligaDesligaHost(host: Host, tituloGrupo: string) {
+    host.onOff = !host.onOff;
+    this.electronService.ligarDesligarHost(tituloGrupo, host).then(async sucess => {
+      this.groupsHosts = await this.electronService.getHostsContent();
+      this.filterHosts();
+    }, err => {
+      this.modalTitle = 'Erro ao atualizar host';
+      this.mensagemErro = err;
+      this.erroModal.open();
+    });
+  }
+
+  async loadHosts() {
+    this.groupsHosts = await this.electronService.getHostsContent();
+    this.filterHosts();
   }
 
 }
