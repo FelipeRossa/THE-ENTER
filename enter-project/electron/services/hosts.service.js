@@ -21,14 +21,22 @@ function parseHostsContent(contentHosts) {
   let currentGroup = null;
 
   const groupRegex = /^#\s+\[#([\w\.\-]+)\s+#([A-Fa-f0-9]{6})\]$/;
-  // Captura: (1)#?, (2)IP, (3)Host, (4)Comentário, (5)Cor
   const hostRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)\s+#([^\s#]+)\s+##([A-Fa-f0-9]{6})$/;
+  const fallbackRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)(\s+#.*)?$/;
+
+  // Grupo genérico para hosts fora do padrão
+  let fallbackGroup = {
+    titulo: 'SGD',
+    corExadecimal: '#d3d3d3',
+    hosts: []
+  };
+  let hasFallbackHosts = false;
 
   for (const rawLine of lines) {
     const line = rawLine.trim();
     if (!line) continue;
 
-    // Grupo
+    // Match do grupo
     const groupMatch = groupRegex.exec(line);
     if (groupMatch) {
       const [, titulo, corHex] = groupMatch;
@@ -41,21 +49,41 @@ function parseHostsContent(contentHosts) {
       continue;
     }
 
-    // Host
+    // Match de host padrão
     const hostMatch = hostRegex.exec(line);
     if (hostMatch && currentGroup) {
       const [, hash, ip, nmHost, comentario, corHex] = hostMatch;
-
       const host = {
-        onOff: hash !== '#', // descomentado = true
-        ip: ip,
-        nmHost: nmHost,
-        comentario: comentario,
+        onOff: hash !== '#',
+        ip,
+        nmHost,
+        comentario,
         corExadecimal: `#${corHex}`
       };
-
       currentGroup.hosts.push(host);
+      continue;
     }
+
+    // Match de host fora do padrão (ex: localhost)
+    const fallbackMatch = fallbackRegex.exec(line);
+    if (fallbackMatch) {
+      const [, hash, ip, nmHost] = fallbackMatch;
+
+      const host = {
+        onOff: hash !== '#',
+        ip,
+        nmHost,
+        comentario: 'SGD',
+        corExadecimal: '#d3d3d3'
+      };
+
+      fallbackGroup.hosts.push(host);
+      hasFallbackHosts = true;
+    }
+  }
+
+  if (hasFallbackHosts) {
+    groups.push(fallbackGroup);
   }
 
   return groups;
@@ -66,13 +94,15 @@ function ligarDesligarHost({ grupoTitulo, ip, nome, onOff }) {
   let content = fs.readFileSync(HOSTS_PATH, 'utf8');
   const lines = content.split('\n');
 
-  const linhaRegex = new RegExp(`^#?\\s*${ip}\\s+${nome}\\s+#.*##[a-fA-F0-9]{6}\\r?$`, 'i');
-  const grupoRegex = new RegExp(`^#?\\s*\\d{1,3}(\\.\\d{1,3}){3}\\s+${nome}\\s+#.*##[a-fA-F0-9]{6}\\r?$`, 'i');
+  const linhaRegex = new RegExp(`#?\\s*${ip}\\s+${nome}\\b`, 'i');
+  const grupoRegex = new RegExp(`^^#?\\s*\\d{1,3}(\\.\\d{1,3}){3}\\s+${nome}\\b`, 'i');
 
   const updatedLines = lines.map(line => {
+    const trimmed = line.trim();
+
     // Se a linha for do mesmo host e estiver no mesmo grupo
-    if (grupoRegex.test(line)) {
-      if (linhaRegex.test(line)) {
+    if (grupoRegex.test(trimmed)) {
+      if (linhaRegex.test(trimmed)) {
         // É a linha do IP específico
         if (onOff) {
           return line.replace(/^#\s*/, ''); // Descomenta só o primeiro '# '

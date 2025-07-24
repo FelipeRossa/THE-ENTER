@@ -37,8 +37,7 @@ export class HostsComponent implements OnInit {
     const ativar = !this.grupoAtivo(grupo); // Se está ativo, desliga. Se está desligado, ativa.
 
     this.electronService.ligarDesligarGrupo(grupo.titulo, ativar).then(async () => {
-      this.groupsHosts = await this.electronService.getHostsContent();
-      this.filterHosts(); // atualiza filtragem se estiver usando
+      this.loadHosts();
     }).catch(err => {
       this.modalTitle = 'Erro ao atualizar grupo: ' + grupo.titulo;
       this.mensagemErro = err;
@@ -52,7 +51,6 @@ export class HostsComponent implements OnInit {
     }
 
     return false;
-
   }
 
   addNovoHost(grupo: GrupoHosts) {
@@ -74,8 +72,7 @@ export class HostsComponent implements OnInit {
   ligaDesligaHost(host: Host, tituloGrupo: string) {
     host.onOff = !host.onOff;
     this.electronService.ligarDesligarHost(tituloGrupo, host).then(async sucess => {
-      this.groupsHosts = await this.electronService.getHostsContent();
-      this.filterHosts();
+      this.loadHosts();
     }, err => {
       this.modalTitle = 'Erro ao atualizar host';
       this.mensagemErro = err;
@@ -85,6 +82,7 @@ export class HostsComponent implements OnInit {
 
   async loadHosts() {
     this.groupsHosts = await this.electronService.getHostsContent();
+    this.groupsHosts.forEach(group => group.onOff = this.grupoAtivo(group));
     this.filterHosts();
   }
 

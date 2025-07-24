@@ -13,9 +13,9 @@
                         {{ grupo.corExadecimal }}
                     </span>
                 </span>
-                <span class="switch-container">
+                <span class="switch-container" *ngIf="grupo.titulo != 'SGD'">
                     <label class="switch" style="gap: 0.5rem;">
-                        <input type="checkbox" (ngModel)="grupoAtivo(grupo)" (click)="ligaDesligaGrupo(grupo)">
+                        <input type="checkbox" [(ngModel)]="grupo.onOff" (click)="ligaDesligaGrupo(grupo)">
                         <span class="slider round"></span>
                     </label>
                     <button class="btn btn-sm btn-outline-secondary" (click)="addNovoHost(grupo)">
