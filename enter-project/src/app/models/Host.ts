@@ -1,9 +1,9 @@
 export class Host {
 
-    public onOff: boolean | undefined;
-    public ip: string | undefined;
-    public nmHost: string | undefined;
-    public comentario: string | undefined;
-    public corExadecimal: string | undefined;
+    public onOff: boolean = false;
+    public ip: string = '';
+    public nmHost: string = '';
+    public comentario: string = '';
+    public corExadecimal: string = '';
 
 }

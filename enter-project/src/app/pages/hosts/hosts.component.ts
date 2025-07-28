@@ -16,7 +16,6 @@ export class HostsComponent implements OnInit {
   groupsHosts: GrupoHosts[] = [];
   search = '';
   filteredHosts: any[] = [];
-
   modalTitle = 'Erro';
   mensagemErro = '';
 
@@ -29,8 +28,28 @@ export class HostsComponent implements OnInit {
   }
 
   filterHosts(): void {
-    const value = this.search.toLowerCase();
-    this.filteredHosts = this.groupsHosts.filter(h => h.titulo && h.titulo.toLowerCase().includes(value));
+    const value = this.search.toLowerCase().trim();
+
+    this.filteredHosts = this.groupsHosts
+      .map(group => {
+        // Filtra hosts dentro do grupo que batem com o valor
+        const matchingHosts = group.hosts.filter(host =>
+          host.nmHost.toLowerCase().includes(value) ||
+          host.ip.includes(value) ||
+          group.titulo.toLowerCase().includes(value)
+        );
+
+        // Retorna novo grupo apenas com os hosts encontrados
+        if (matchingHosts.length > 0) {
+          return {
+            ...group,
+            hosts: matchingHosts
+          };
+        }
+
+        return null;
+      })
+      .filter(group => group !== null);
   }
 
   ligaDesligaGrupo(grupo: GrupoHosts) {
@@ -53,20 +72,9 @@ export class HostsComponent implements OnInit {
     return false;
   }
 
-  addNovoHost(grupo: GrupoHosts) {
-    console.log('Editar grupo:', grupo);
-    // futuramente abrir modal
-  }
-
   novoGrupoHost(): void {
     // lógica futura para adicionar host
     alert('Novo host!');
-  }
-
-
-  editarHost(grupo: Host) {
-    console.log('Editar grupo:', grupo);
-    // futuramente abrir modal
   }
 
   ligaDesligaHost(host: Host, tituloGrupo: string) {
@@ -85,5 +93,24 @@ export class HostsComponent implements OnInit {
     this.groupsHosts.forEach(group => group.onOff = this.grupoAtivo(group));
     this.filterHosts();
   }
+
+  onHostSalvo(event: { grupo: any, host: any, modoEdicao: boolean }) {
+    if (event.modoEdicao) {
+      // Lógica para atualizar host existente
+    } else {
+      event.grupo.hosts.push(event.host);
+    }
+  }
+
+
+
+
+  // novoHost = {
+  //   onOff: false,
+  //   ip: '',
+  //   nmHost: '',
+  //   comentario: '',
+  //   corExadecimal: '#ffffff'
+  // };
 
 }

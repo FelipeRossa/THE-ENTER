@@ -1,0 +1,15 @@
+/* Lâmpada */
+.bi-lightbulb,
+.bi-lightbulb-fill {
+    font-size: 1.2rem;
+    transition: all 0.3s ease-in-out;
+    color: var(--text-color);
+    opacity: 0.6;
+}
+
+.lamp-on {
+    color: #f8e45c;
+    /* tom pastel amarelo */
+    text-shadow: 0 0 6px #f8e45c;
+    opacity: 1;
+}

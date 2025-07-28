@@ -1,0 +1,51 @@
+<div #modalNovoHost class="modal fade" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white py-2">
+        <h5 class="modal-title" id="modalLabel">
+          {{ modoEdicao ? 'Editar Host' : 'Novo Host' }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="fecharModal()" aria-label="Fechar"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="bi" [ngClass]="{
+          'bi-lightbulb-fill': host.onOff,
+          'bi-lightbulb': !host.onOff,
+          'lamp-on': host.onOff
+          }"></i>
+
+          <label class="switch" style="gap: 0.5rem;">
+            <input type="checkbox" [(ngModel)]="host.onOff" id="ativoSwitch">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="mb-2">
+          <label for="ip" class="form-label">IP</label>
+          <input type="text" class="form-control" [(ngModel)]="host.ip" placeholder="xxx.xxx.xxx.xxx">
+        </div>
+
+        <div class="mb-2">
+          <label for="nmHost" class="form-label">Host</label>
+          <input type="text" class="form-control" [(ngModel)]="host.nmHost">
+        </div>
+
+        <div class="mb-2">
+          <label for="comentario" class="form-label">Comentário</label>
+          <input type="text" class="form-control" maxlength="15" [(ngModel)]="host.comentario">
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Cor</label>
+          <input type="color" class="form-control form-control-color" [(ngModel)]="host.corExadecimal">
+        </div>
+
+        <div class="d-grid">
+          <button class="btn btn-success" (click)="salvar()">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

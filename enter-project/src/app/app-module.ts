@@ -8,6 +8,7 @@ import { NavbarComponent } from './shared/navbar.component/navbar.component';
 import { HostsComponent } from './pages/hosts/hosts.component';
 import { FormsModule } from '@angular/forms';
 import { ErrorModalComponent } from './shared/error-modal.component/error-modal.component';
+import { CadastroHostsComponent } from './pages/hosts/cadastro/cadastro-hosts.component/cadastro-hosts.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { ErrorModalComponent } from './shared/error-modal.component/error-modal.
     NavbarComponent,
     HostsComponent,
     ErrorModalComponent,
+    CadastroHostsComponent,
   ],
   imports: [
     BrowserModule,

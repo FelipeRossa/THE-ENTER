@@ -18,9 +18,8 @@
                         <input type="checkbox" [(ngModel)]="grupo.onOff" (click)="ligaDesligaGrupo(grupo)">
                         <span class="slider round"></span>
                     </label>
-                    <button class="btn btn-sm btn-outline-secondary" (click)="addNovoHost(grupo)">
-                        Novo Host
-                    </button>
+                    <button (click)="modalCadastro.abrirModal(grupo)" class="btn btn-sm btn-outline-secondary">Novo
+                        Host</button>
                 </span>
             </div>
 
@@ -28,14 +27,14 @@
                 <thead>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let host of grupo.hosts">
+                    <tr *ngFor="let host of grupo.hosts" (click)="modalCadastro.abrirModal(grupo, host)">
                         <td class="align-items-center gap-2">
-                            <div class="switch-container">
-                                <label class="switch">
-                                    <input type="checkbox" [(ngModel)]="host.onOff"
-                                        (click)="ligaDesligaHost(host, grupo.titulo)">
+                            <div class="switch-container" (click)="$event.stopPropagation()">
+                                <label class="switch" style="gap: 0.5rem;">
+                                    <input type="checkbox" [checked]="host.onOff"
+                                        (click)="ligaDesligaHost(host, grupo)">
                                     <span class="slider round"></span>
-                                </label>
+                                </label> 
 
                                 <i class="bi" [ngClass]="{
                                 'bi-lightbulb-fill': host.onOff,
@@ -49,11 +48,6 @@
                         <td style="justify-content: start; display: flex">{{ host.nmHost }}</td>
                         <td><span class="badge" [ngStyle]="{ 'background-color': host.corExadecimal }"
                                 style="color: black;">{{ host.comentario }}</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-info" (click)="editarHost(host)">
-                                ✏️
-                            </button>
-                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -61,6 +55,8 @@
 
     </div>
 </div>
+
+<app-cadastro-hosts #modalCadastro (hostSalvo)="onHostSalvo($event)"></app-cadastro-hosts>
 
 <app-error-modal [modalTitleErr]="modalTitle" [mensagemErr]="mensagemErro" (onClose)="loadHosts()"
     #erroModal></app-error-modal>
