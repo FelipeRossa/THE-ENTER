@@ -1,13 +1,13 @@
 <div class="hosts-page">
     <div class="header">
         <input type="text" placeholder="Pesquisar por IP ou host..." [(ngModel)]="search" (input)="filterHosts()" />
-        <button class="new-host-btn" (click)="novoGrupoHost()">Novo Grupo</button>
+        <button class="new-host-btn" (click)="modalNovoGrupo.abrirModal()">Novo Grupo</button>
     </div>
 
     <div class="host-list">
         <div class="table-container" *ngFor="let grupo of filteredHosts">
-            <div class="group-header">
-                <span>
+            <div class="group-header" >
+                <span (click)="modalNovoGrupo.abrirModal(grupo)" style="cursor:pointer;">
                     {{ grupo.titulo }}
                     <span class="badge" [ngStyle]="{ 'background-color': grupo.corExadecimal }">
                         {{ grupo.corExadecimal }}
@@ -18,7 +18,7 @@
                         <input type="checkbox" [(ngModel)]="grupo.onOff" (click)="ligaDesligaGrupo(grupo)">
                         <span class="slider round"></span>
                     </label>
-                    <button (click)="modalCadastro.abrirModal(grupo)" class="btn btn-sm btn-outline-secondary">Novo
+                    <button (click)="modalCadastroHost.abrirModal(grupo)" class="btn btn-sm btn-outline-secondary">Novo
                         Host</button>
                 </span>
             </div>
@@ -27,7 +27,7 @@
                 <thead>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let host of grupo.hosts" (click)="modalCadastro.abrirModal(grupo, host)">
+                    <tr *ngFor="let host of grupo.hosts" (click)="modalCadastroHost.abrirModal(grupo, host)">
                         <td class="align-items-center gap-2">
                             <div class="switch-container" (click)="$event.stopPropagation()">
                                 <label class="switch" style="gap: 0.5rem;">
@@ -56,7 +56,9 @@
     </div>
 </div>
 
-<app-cadastro-hosts #modalCadastro (hostSalvo)="onHostSalvo($event)"></app-cadastro-hosts>
+<app-cadastro-grupo-host #modalNovoGrupo (grupoCriado)="criarGrupoEAdicionarHost($event)"></app-cadastro-grupo-host>
+
+<app-cadastro-hosts #modalCadastroHost (hostSalvo)="loadHosts()"></app-cadastro-hosts>
 
 <app-error-modal [modalTitleErr]="modalTitle" [mensagemErr]="mensagemErro" (onClose)="loadHosts()"
     #erroModal></app-error-modal>

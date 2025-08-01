@@ -25,6 +25,24 @@ function registerIpcHandlers() {
       throw err;
     }
   });
+
+  ipcMain.handle('host:salvar', (event, grupoTitulo, hostAntigo, novoHost) => {
+    try {
+      hostsService.salvar(grupoTitulo, hostAntigo, novoHost);
+      return true;
+    } catch (err) {
+      throw err;
+    }
+  });
+
+  ipcMain.handle('grupo:salvar', (event, grupoAntigo, novoGrupo) => {
+    try {
+      hostsService.salvarGrupo(grupoAntigo, novoGrupo);
+      return true;
+    } catch (err) {
+      throw err;
+    }
+  });
 }
 
 module.exports = { registerIpcHandlers };

@@ -20,8 +20,8 @@ function parseHostsContent(contentHosts) {
   const groups = [];
   let currentGroup = null;
 
-  const groupRegex = /^#\s+\[#([\w\.\-]+)\s+#([A-Fa-f0-9]{6})\]$/;
-  const hostRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)\s+#([^\s#]+)\s+##([A-Fa-f0-9]{6})$/;
+  const groupRegex = /^#\s+\[#(.+?)\s+#([A-Fa-f0-9]{6})\]$/;
+  const hostRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)\s+#(.*?)\s+##([A-Fa-f0-9]{6})$/;
   const fallbackRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)(\s+#.*)?$/;
 
   // Grupo genérico para hosts fora do padrão
@@ -139,8 +139,8 @@ function ligarDesligarGrupo(grupoTitulo, ativar) {
     const trimmed = line.trim();
 
     // Detecta início do grupo
-    if (/^#\s+\[#([\w\.\-]+)\s+#([A-Fa-f0-9]{6})\]$/.test(trimmed)) {
-      const match = trimmed.match(/^#\s+\[#([\w\.\-]+)\s+#([A-Fa-f0-9]{6})\]$/);
+    if (/^#\s+\[#(.+?)\s+#([A-Fa-f0-9]{6})\]$/.test(trimmed)) {
+      const match = trimmed.match(/^#\s+\[#(.+?)\s+#([A-Fa-f0-9]{6})\]$/);
       insideGroup = match && match[1] === grupoTitulo;
       updatedLines.push(line);
       continue;
@@ -149,7 +149,7 @@ function ligarDesligarGrupo(grupoTitulo, ativar) {
     // Se estiver dentro do grupo
     if (insideGroup) {
       // Se for linha de host com padrão ##hex
-      const hostMatch = trimmed.match(/^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)\s+#([^\s#]+)\s+##([A-Fa-f0-9]{6})$/);
+      const hostMatch = trimmed.match(/^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)\s+#(.*?)\s+##([A-Fa-f0-9]{6})$/);
 
       if (hostMatch) {
         const isCommented = hostMatch[1] === '#';
@@ -172,9 +172,158 @@ function ligarDesligarGrupo(grupoTitulo, ativar) {
   fs.writeFileSync(HOSTS_PATH, updatedLines.join('\n'), 'utf8');
 }
 
+function salvar(grupoTitulo, hostAntigo, novoHost) {
+  try {
+    let content = fs.readFileSync(HOSTS_PATH, 'utf8');
+    let lines = content.split(/\r?\n/);
+
+    const grupoRegex = new RegExp(`^#\\s+\\[#${grupoTitulo}\\s+#([A-Fa-f0-9]{6})\\]$`);
+    const hostLineRegex = (ip, host) =>
+      new RegExp(`^#?\\s*${ip}\\s+${host}\\s+#.*##[A-Fa-f0-9]{6}`, 'i');
+
+    let inGrupo = false;
+    let grupoInicioIdx = -1;
+    let grupoFimIdx = -1;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      if (grupoRegex.test(line)) {
+        inGrupo = true;
+        grupoInicioIdx = i;
+        grupoFimIdx = i; // inicio temporário
+        continue;
+      }
+
+      if (inGrupo) {
+        // Se encontrar outra definição de grupo, parar
+        if (/^#\s+\[#.+\s+#([A-Fa-f0-9]{6})\]$/.test(line)) break;
+
+        grupoFimIdx = i;
+      }
+    }
+
+    if (grupoInicioIdx === -1) {
+      throw `Grupo '${grupoTitulo}' não encontrado`;
+    }
+
+    // Verifica duplicidade
+    const existeDuplicado = lines
+      .slice(grupoInicioIdx + 1, grupoFimIdx + 1)
+      .some(line => {
+        const duplicadoRegex = hostLineRegex(novoHost.ip, novoHost.nmHost);
+        return duplicadoRegex.test(line);
+      });
+
+    if (existeDuplicado && (!hostAntigo || (novoHost.ip !== hostAntigo.ip || novoHost.nmHost !== hostAntigo.nmHost))) {
+      throw 'Já existe um host com esse IP e nome neste grupo';
+    }
+
+    // Formata a nova linha
+    const novaLinha = `${novoHost.onOff ? '' : '# '}${novoHost.ip} ${novoHost.nmHost} #${novoHost.comentario} ##${novoHost.corExadecimal.replace('#', '')}`;
+
+    if (hostAntigo) {
+      // Atualiza host existente
+      const regexAntigo = hostLineRegex(hostAntigo.ip, hostAntigo.nmHost);
+      let linhaEncontrada = false;
+
+      for (let i = grupoInicioIdx + 1; i <= grupoFimIdx; i++) {
+        if (regexAntigo.test(lines[i])) {
+          lines[i] = novaLinha;
+          linhaEncontrada = true;
+          break;
+        }
+      }
+
+      if (!linhaEncontrada) {
+        throw 'Host antigo não encontrado no grupo';
+      }
+    } else {
+      // Adiciona novo host ao final do grupo
+      lines.splice(grupoFimIdx + 1, 0, novaLinha);
+    }
+
+    fs.writeFileSync(HOSTS_PATH, lines.join('\n'), 'utf8');
+    return true;
+  } catch (err) {
+    console.error(err);
+    throw err.toString();
+  }
+
+}
+
+function salvarGrupo(grupoAntigo, grupoNovo) {
+  let content = fs.readFileSync(HOSTS_PATH, 'utf8');
+
+  const lines = content.split(/\r?\n/);
+
+  // valida duplicidade
+  validarGrupoUnico(grupoNovo.titulo, grupoAntigo);
+
+  const novaLinhaGrupo = `# [#${grupoNovo.titulo} ${grupoNovo.corExadecimal}]`;
+
+  const groupRegexAntigo = grupoAntigo
+    ? new RegExp(`^#\\s+\\[#${grupoAntigo.titulo}\\s+#([A-Fa-f0-9]{6})\\]$`, 'i')
+    : null;
+  let grupoEditado = false;
+  const updatedLines = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    if (groupRegexAntigo && groupRegexAntigo.test(line)) {
+      // Se for edição → substitui a linha
+      updatedLines.push(novaLinhaGrupo);
+      grupoEditado = true;
+      continue;
+    }
+
+    updatedLines.push(line);
+  }
+
+  // Se não for edição → adiciona no final
+  if (!grupoEditado && !grupoAntigo) {
+    updatedLines.push('');
+    updatedLines.push(novaLinhaGrupo);
+  }
+
+  fs.writeFileSync(HOSTS_PATH, updatedLines.join('\n'), 'utf8');
+
+}
+
+function validarGrupoUnico(grupoTitulo,tituloGgrupoAntigo = null) {
+  const fs = require('fs');
+  const HOSTS_PATH = 'C:/Windows/System32/drivers/etc/hosts';
+  const content = fs.readFileSync(HOSTS_PATH, 'utf8');
+  const lines = content.split(/\r?\n/);
+
+  const groupRegex = new RegExp(`^#\\s+\\[#${grupoTitulo}\\s+#([A-Fa-f0-9]{6})\\]$`, 'i');
+
+  let ocorrencias = 0;
+
+  for (const line of lines) {
+    if (groupRegex.test(line)) {
+      // Se for edição, desconsiderar o grupo que será substituído
+      if (
+        tituloGgrupoAntigo &&
+        new RegExp(`^#\\s+\\[#${tituloGgrupoAntigo}\\s+#([A-Fa-f0-9]{6})\\]$`, 'i').test(line)
+      ) {
+        continue;
+      }
+      ocorrencias++;
+    }
+  }
+
+  if (ocorrencias > 0) {
+    throw new Error(`Mais de um grupo já cadastrado com o nome "${grupoTitulo}"`);
+  }
+}
+
 // Exporta as funções que desejar
 module.exports = {
   getHostsGroup,
   ligarDesligarHost,
-  ligarDesligarGrupo
+  ligarDesligarGrupo,
+  salvar,
+  salvarGrupo
 };

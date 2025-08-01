@@ -1,0 +1,22 @@
+<div class="modal fade" id="modalNovoGrupo" tabindex="-1" aria-labelledby="modalNovoGrupoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header text-white py-2"
+                [ngStyle]="{ 'background-color': grupo.corExadecimal || '#0d6efd' }">
+                <h5 class="modal-title" id="modalNovoGrupoLabel">Novo Grupo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body d-flex flex-column gap-2">
+                <input class="form-control" type="text" placeholder="Nome do grupo" [(ngModel)]="grupo.titulo" />
+                <input class="form-control form-control-color" type="color" [(ngModel)]="grupo.corExadecimal" />
+                <button class="btn text-white w-100"
+                    [ngStyle]="{ 'background-color': grupo.corExadecimal || '#0d6efd' }" (click)="adicionarGrupo()">
+                    {{!modoEdicao ? 'Adicionar Grupo e CriarNovo Host' : 'Salvar'}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-error-modal [modalTitleErr]="modalTitle" [mensagemErr]="mensagemErro" #erroModal></app-error-modal>

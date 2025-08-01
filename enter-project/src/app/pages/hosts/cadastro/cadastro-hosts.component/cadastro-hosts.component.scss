@@ -13,3 +13,39 @@
     text-shadow: 0 0 6px #f8e45c;
     opacity: 1;
 }
+
+.modal-header, .btn-success {
+    background-color: #701afa;
+}
+
+.modal-content input::placeholder,
+.modal-content textarea::placeholder {
+  color: #ae04fd7e; // ou qualquer cor desejada
+  opacity: 1;     // garante que o placeholder fique visível mesmo em alguns browsers
+}
+
+.modal-content input[type="text"],
+// .modal-content input[type="color"],
+.modal-content textarea {
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid #8b5cf6; // ou a cor do seu header roxo
+  border-radius: 0;
+  color: var(--text-color); // ajuste se estiver em tema escuro
+  padding: 6px 8px;
+  margin-bottom: 12px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.modal-content input[type="text"]:focus,
+.modal-content textarea:focus {
+  border-bottom-color: #a855f7; // cor mais clara no foco
+}
+
+.modal-content label {
+  color: var(--text-color); // ou var(--text-color) se tiver tema dinâmico
+  margin-bottom: 4px;
+  font-size: 14px;
+}

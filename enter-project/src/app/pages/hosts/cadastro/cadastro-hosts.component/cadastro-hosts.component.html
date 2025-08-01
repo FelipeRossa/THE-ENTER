@@ -1,7 +1,7 @@
 <div #modalNovoHost class="modal fade" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header bg-primary text-white py-2">
+      <div class="modal-header text-white py-2">
         <h5 class="modal-title" id="modalLabel">
           {{ modoEdicao ? 'Editar Host' : 'Novo Host' }}
         </h5>
@@ -49,3 +49,5 @@
     </div>
   </div>
 </div>
+
+<app-error-modal [modalTitleErr]="modalTitle" [mensagemErr]="mensagemErro" #erroModal></app-error-modal>

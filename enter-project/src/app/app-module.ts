@@ -9,6 +9,7 @@ import { HostsComponent } from './pages/hosts/hosts.component';
 import { FormsModule } from '@angular/forms';
 import { ErrorModalComponent } from './shared/error-modal.component/error-modal.component';
 import { CadastroHostsComponent } from './pages/hosts/cadastro/cadastro-hosts.component/cadastro-hosts.component';
+import { CadastroGrupoHostComponent } from './pages/hosts/cadastro/cadastro-grupo-host.component/cadastro-grupo-host.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { CadastroHostsComponent } from './pages/hosts/cadastro/cadastro-hosts.co
     HostsComponent,
     ErrorModalComponent,
     CadastroHostsComponent,
+    CadastroGrupoHostComponent,
   ],
   imports: [
     BrowserModule,

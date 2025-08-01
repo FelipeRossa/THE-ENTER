@@ -1,4 +1,6 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import { ElectronService } from '../../../../services/electron/electron.service';
+import { Host } from '../../../../models/Host';
 
 declare var bootstrap: any;
 
@@ -12,15 +14,15 @@ export class CadastroHostsComponent implements AfterViewInit {
   @ViewChild('modalNovoHost') modalRef!: ElementRef;
   @Output() hostSalvo = new EventEmitter<any>();
 
+  @ViewChild('erroModal') erroModal!: any;
+  modalTitle = 'Erro';
+  mensagemErro = '';
+
   modalInstance: any;
   modoEdicao = false;
   grupoAtual: any;
 
-  ngAfterViewInit(): void {
-    if (this.modalRef) {
-      this.modalInstance = new bootstrap.Modal(this.modalRef.nativeElement);
-    }
-  }
+  hostAntigo: Host | undefined = undefined;
 
   host = {
     onOff: true,
@@ -30,12 +32,22 @@ export class CadastroHostsComponent implements AfterViewInit {
     corExadecimal: '#cccccc'
   };
 
+  constructor(private electronService: ElectronService) {
+  }
+
+  ngAfterViewInit(): void {
+    if (this.modalRef) {
+      this.modalInstance = new bootstrap.Modal(this.modalRef.nativeElement);
+    }
+  }
+
   abrirModal(grupo: any, host?: any): void {
     this.grupoAtual = grupo;
     this.modoEdicao = !!host;
 
     if (host) {
       this.host = { ...host };
+      this.hostAntigo = { ...host };
     } else {
       this.host = {
         onOff: true,
@@ -44,6 +56,7 @@ export class CadastroHostsComponent implements AfterViewInit {
         comentario: '',
         corExadecimal: grupo.corExadecimal || '#ffffff'
       };
+      this.hostAntigo = undefined;
     }
 
     this.modalInstance?.show();
@@ -54,8 +67,18 @@ export class CadastroHostsComponent implements AfterViewInit {
   }
 
   salvar(): void {
-    const novoHost = { ...this.host };
-    this.hostSalvo.emit({ grupo: this.grupoAtual, host: novoHost, modoEdicao: this.modoEdicao });
+    this.electronService.salvarHost(this.grupoAtual.titulo, this.hostAntigo as Host, this.host).then(async sucess => {
+      this.hostSalvo.emit();
+    }, err => {
+      this.modalTitle = 'Erro ao atualizar host';
+      this.mensagemErro = err;
+      this.erroModal.open();
+    });
+
+
+    // const novoHost = { ...this.host };
+    // { grupo: this.grupoAtual, host: novoHost, modoEdicao: this.modoEdicao }
+    this.hostSalvo.emit();
     this.fecharModal();
   }
 

@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ElectronService } from '../../services/electron/electron.service';
 import { GrupoHosts } from '../../models/GrupoHosts';
 import { Host } from '../../models/Host';
+import { CadastroHostsComponent } from './cadastro/cadastro-hosts.component/cadastro-hosts.component';
 
 @Component({
   selector: 'app-hosts.component',
@@ -13,15 +14,16 @@ export class HostsComponent implements OnInit {
 
   @ViewChild('erroModal') erroModal!: any;
 
+  @ViewChild('modalCadastroHost') modalCadastroHost!: CadastroHostsComponent;
+
+
   groupsHosts: GrupoHosts[] = [];
   search = '';
   filteredHosts: any[] = [];
   modalTitle = 'Erro';
   mensagemErro = '';
 
-  constructor(private electronService: ElectronService) {
-
-  }
+  constructor(private electronService: ElectronService) {}
 
   async ngOnInit(): Promise<void> {
     this.loadHosts();
@@ -40,7 +42,7 @@ export class HostsComponent implements OnInit {
         );
 
         // Retorna novo grupo apenas com os hosts encontrados
-        if (matchingHosts.length > 0) {
+        if (matchingHosts.length > 0 || group.hosts.length === 0) {
           return {
             ...group,
             hosts: matchingHosts
@@ -95,22 +97,19 @@ export class HostsComponent implements OnInit {
   }
 
   onHostSalvo(event: { grupo: any, host: any, modoEdicao: boolean }) {
-    if (event.modoEdicao) {
-      // Lógica para atualizar host existente
-    } else {
-      event.grupo.hosts.push(event.host);
-    }
+    // TODO se pa não precisa desse metodo
+
+    // if (event.modoEdicao) {
+    //   // Lógica para atualizar host existente
+    // } else {
+    //   event.grupo.hosts.push(event.host);
+    // }
   }
 
-
-
-
-  // novoHost = {
-  //   onOff: false,
-  //   ip: '',
-  //   nmHost: '',
-  //   comentario: '',
-  //   corExadecimal: '#ffffff'
-  // };
+  criarGrupoEAdicionarHost(novoGrupo: GrupoHosts) {
+    this.loadHosts();
+    // TODO verificar a regra na edição pra abrir esse modal
+    this.modalCadastroHost.abrirModal(novoGrupo);
+  }
 
 }

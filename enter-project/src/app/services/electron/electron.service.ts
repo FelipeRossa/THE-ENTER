@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GrupoHosts } from '../../models/GrupoHosts';
+import { Host } from '../../models/Host';
 
 declare global {
   interface Window {
@@ -51,6 +52,14 @@ export class ElectronService {
 
   ligarDesligarGrupo(grupoTitulo: string, ativar: boolean): Promise<boolean> {
     return this.ipcRenderer.invoke('host:toggle-group', grupoTitulo, ativar);
+  }
+
+  salvarHost(grupoTitulo: string, hostAntigo: Host, novoHost: Host): Promise<boolean> {
+    return this.ipcRenderer.invoke('host:salvar', grupoTitulo, hostAntigo, novoHost);
+  }
+
+  salvarGrupo(grupoAntigo: GrupoHosts | null, grupoNovo: GrupoHosts): Promise<boolean> {
+    return this.ipcRenderer.invoke('grupo:salvar', grupoAntigo, grupoNovo);
   }
 
 }
