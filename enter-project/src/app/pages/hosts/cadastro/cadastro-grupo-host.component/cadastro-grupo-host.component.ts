@@ -57,7 +57,12 @@ export class CadastroGrupoHostComponent {
 
     this.electronService.salvarGrupo(this.grupoAntigo as GrupoHosts, this.grupo).then(async sucess => {
       this.modalInstance.hide();
-      this.grupoCriado.emit({ ...this.grupo });
+      if (this.modoEdicao) {
+        this.grupoCriado.emit();
+      } else {
+        this.grupoCriado.emit({ ...this.grupo });
+      }
+      
     }, err => {
       this.modalTitle = 'Erro ao atualizar host';
       this.mensagemErro = err;

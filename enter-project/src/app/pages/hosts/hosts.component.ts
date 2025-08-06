@@ -23,7 +23,7 @@ export class HostsComponent implements OnInit {
   modalTitle = 'Erro';
   mensagemErro = '';
 
-  constructor(private electronService: ElectronService) {}
+  constructor(private electronService: ElectronService) { }
 
   async ngOnInit(): Promise<void> {
     this.loadHosts();
@@ -109,7 +109,9 @@ export class HostsComponent implements OnInit {
   criarGrupoEAdicionarHost(novoGrupo: GrupoHosts) {
     this.loadHosts();
     // TODO verificar a regra na edição pra abrir esse modal
-    this.modalCadastroHost.abrirModal(novoGrupo);
+    if (novoGrupo != null) {
+      this.modalCadastroHost.abrirModal(novoGrupo);
+    }
   }
 
 }

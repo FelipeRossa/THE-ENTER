@@ -40,3 +40,15 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Angular
+/dist/
+/dist-browser/
+/dist-server/
+/browser/
+/server/
+
+# Electron build
+/dist_electron/
+/release/
+/out/

@@ -22,7 +22,7 @@ function parseHostsContent(contentHosts) {
 
   const groupRegex = /^#\s+\[#(.+?)\s+#([A-Fa-f0-9]{6})\]$/;
   const hostRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)\s+#(.*?)\s+##([A-Fa-f0-9]{6})$/;
-  const fallbackRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)(\s+#.*)?$/;
+  const fallbackRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)(?:\s+#([^#]*?))?(?:\s+##([A-Fa-f0-9]{6}))?\s*$/;
 
   // Grupo genérico para hosts fora do padrão
   let fallbackGroup = {
@@ -67,14 +67,14 @@ function parseHostsContent(contentHosts) {
     // Match de host fora do padrão (ex: localhost)
     const fallbackMatch = fallbackRegex.exec(line);
     if (fallbackMatch) {
-      const [, hash, ip, nmHost] = fallbackMatch;
+      const [, hash, ip, nmHost, comentario, corHex] = fallbackMatch;
 
       const host = {
         onOff: hash !== '#',
         ip,
         nmHost,
-        comentario: 'SGD',
-        corExadecimal: '#d3d3d3'
+        comentario: comentario ? comentario : 'SGD',
+        corExadecimal: corHex ? `#${corHex}` : '#d3d3d3'
       };
 
       fallbackGroup.hosts.push(host);
@@ -174,13 +174,59 @@ function ligarDesligarGrupo(grupoTitulo, ativar) {
 
 function salvar(grupoTitulo, hostAntigo, novoHost) {
   try {
+    const fs = require('fs');
+    const HOSTS_PATH = 'C:/Windows/System32/drivers/etc/hosts';
+
     let content = fs.readFileSync(HOSTS_PATH, 'utf8');
     let lines = content.split(/\r?\n/);
 
-    const grupoRegex = new RegExp(`^#\\s+\\[#${grupoTitulo}\\s+#([A-Fa-f0-9]{6})\\]$`);
     const hostLineRegex = (ip, host) =>
-      new RegExp(`^#?\\s*${ip}\\s+${host}\\s+#.*##[A-Fa-f0-9]{6}`, 'i');
+      new RegExp(`^#?\\s*${ip.replace(/\./g, '\\.')}\\s+${host}(\\s+|\\s*#|$)`, 'i');
 
+    const novaLinha = `${novoHost.onOff ? '' : '# '}${novoHost.ip} ${novoHost.nmHost} #${novoHost.comentario ?? ''} ##${(novoHost.corExadecimal || '#cccccc').replace('#', '')}`;
+
+    // Caso seja host sem grupo definido
+    if (grupoTitulo === 'SGD') {
+      // Verificar duplicidade em toda a lista
+      const existeDuplicado = lines.some(line => {
+        const duplicadoRegex = hostLineRegex(novoHost.ip, novoHost.nmHost);
+        return duplicadoRegex.test(line);
+      });
+
+      if (
+        existeDuplicado &&
+        (!hostAntigo || novoHost.ip !== hostAntigo.ip || novoHost.nmHost !== hostAntigo.nmHost)
+      ) {
+        throw `Já existe um host com IP ${novoHost.ip} e nome ${novoHost.nmHost} fora de grupo.`;
+      }
+
+      // Editar
+      if (hostAntigo) {
+        const regexAntigo = hostLineRegex(hostAntigo.ip, hostAntigo.nmHost);
+        let linhaAlterada = false;
+
+        for (let i = 0; i < lines.length; i++) {
+          if (regexAntigo.test(lines[i])) {
+            lines[i] = novaLinha;
+            linhaAlterada = true;
+            break;
+          }
+        }
+
+        if (!linhaAlterada) throw 'Host antigo não encontrado fora de grupo.';
+      } else {
+        // Adicionar ao final do arquivo
+        lines.push(novaLinha);
+      }
+
+      fs.writeFileSync(HOSTS_PATH, lines.join('\n'), 'utf8');
+      return true;
+    }
+
+    // -------------------
+    // Caso com grupo definido
+    // -------------------
+    const grupoRegex = new RegExp(`^#\\s+\\[#${grupoTitulo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s+#([A-Fa-f0-9]{6})\\]$`);
     let inGrupo = false;
     let grupoInicioIdx = -1;
     let grupoFimIdx = -1;
@@ -191,14 +237,12 @@ function salvar(grupoTitulo, hostAntigo, novoHost) {
       if (grupoRegex.test(line)) {
         inGrupo = true;
         grupoInicioIdx = i;
-        grupoFimIdx = i; // inicio temporário
+        grupoFimIdx = i;
         continue;
       }
 
       if (inGrupo) {
-        // Se encontrar outra definição de grupo, parar
         if (/^#\s+\[#.+\s+#([A-Fa-f0-9]{6})\]$/.test(line)) break;
-
         grupoFimIdx = i;
       }
     }
@@ -207,7 +251,6 @@ function salvar(grupoTitulo, hostAntigo, novoHost) {
       throw `Grupo '${grupoTitulo}' não encontrado`;
     }
 
-    // Verifica duplicidade
     const existeDuplicado = lines
       .slice(grupoInicioIdx + 1, grupoFimIdx + 1)
       .some(line => {
@@ -219,11 +262,7 @@ function salvar(grupoTitulo, hostAntigo, novoHost) {
       throw 'Já existe um host com esse IP e nome neste grupo';
     }
 
-    // Formata a nova linha
-    const novaLinha = `${novoHost.onOff ? '' : '# '}${novoHost.ip} ${novoHost.nmHost} #${novoHost.comentario} ##${novoHost.corExadecimal.replace('#', '')}`;
-
     if (hostAntigo) {
-      // Atualiza host existente
       const regexAntigo = hostLineRegex(hostAntigo.ip, hostAntigo.nmHost);
       let linhaEncontrada = false;
 
@@ -239,7 +278,6 @@ function salvar(grupoTitulo, hostAntigo, novoHost) {
         throw 'Host antigo não encontrado no grupo';
       }
     } else {
-      // Adiciona novo host ao final do grupo
       lines.splice(grupoFimIdx + 1, 0, novaLinha);
     }
 
@@ -249,7 +287,6 @@ function salvar(grupoTitulo, hostAntigo, novoHost) {
     console.error(err);
     throw err.toString();
   }
-
 }
 
 function salvarGrupo(grupoAntigo, grupoNovo) {
@@ -258,7 +295,7 @@ function salvarGrupo(grupoAntigo, grupoNovo) {
   const lines = content.split(/\r?\n/);
 
   // valida duplicidade
-  validarGrupoUnico(grupoNovo.titulo, grupoAntigo);
+  validarGrupoUnico(grupoNovo.titulo, grupoAntigo.titulo);
 
   const novaLinhaGrupo = `# [#${grupoNovo.titulo} ${grupoNovo.corExadecimal}]`;
 
@@ -291,7 +328,7 @@ function salvarGrupo(grupoAntigo, grupoNovo) {
 
 }
 
-function validarGrupoUnico(grupoTitulo,tituloGgrupoAntigo = null) {
+function validarGrupoUnico(grupoTitulo, tituloGgrupoAntigo = null) {
   const fs = require('fs');
   const HOSTS_PATH = 'C:/Windows/System32/drivers/etc/hosts';
   const content = fs.readFileSync(HOSTS_PATH, 'utf8');

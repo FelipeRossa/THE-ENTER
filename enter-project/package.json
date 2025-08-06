@@ -9,7 +9,32 @@
     "electron_prod": "ng build --base-href ./ && electron .",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "postinstall": "electron-builder install-app-deps",
+    "electron:build": "electron-builder",
+    "build:all": "ng build --base-href ./ --configuration production && electron-builder"
+  },
+  "build": {
+    "appId": "br.com.theenter",
+    "productName": "The Enter",
+    "directories": {
+      "output": "dist_electron"
+    },
+    "files": [
+      "dist/enter-project/**/*",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "The Enter"
+    }
   },
   "prettier": {
     "overrides": [
@@ -42,6 +67,7 @@
     "@types/bootstrap": "^5.2.10",
     "@types/jasmine": "~5.1.0",
     "electron": "^37.2.1",
+    "electron-builder": "^26.0.12",
     "jasmine-core": "~5.7.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
