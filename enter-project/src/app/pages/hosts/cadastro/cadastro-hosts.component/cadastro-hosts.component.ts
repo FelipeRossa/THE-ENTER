@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { ElectronService } from '../../../../services/electron/electron.service';
 import { Host } from '../../../../models/Host';
+import { ModalConfirmacaoComponent } from '../../../../shared/modal-confirmacao.component/modal-confirmacao.component';
 
 declare var bootstrap: any;
 
@@ -13,6 +14,9 @@ declare var bootstrap: any;
 export class CadastroHostsComponent implements AfterViewInit {
   @ViewChild('modalNovoHost') modalRef!: ElementRef;
   @Output() hostSalvo = new EventEmitter<any>();
+
+  @ViewChild('modalConfirmacao') modalConfirmacao!: ModalConfirmacaoComponent;
+
 
   @ViewChild('erroModal') erroModal!: any;
   modalTitle = 'Erro';
@@ -69,17 +73,28 @@ export class CadastroHostsComponent implements AfterViewInit {
   salvar(): void {
     this.electronService.salvarHost(this.grupoAtual.titulo, this.hostAntigo as Host, this.host).then(async sucess => {
       this.hostSalvo.emit();
+      this.fecharModal();
     }, err => {
       this.modalTitle = 'Erro ao atualizar host';
       this.mensagemErro = err;
       this.erroModal.open();
     });
+  }
 
+  excluirHost() {
+    this.modalConfirmacao.open();
+  }
 
-    // const novoHost = { ...this.host };
-    // { grupo: this.grupoAtual, host: novoHost, modoEdicao: this.modoEdicao }
-    this.hostSalvo.emit();
-    this.fecharModal();
+  onConfirmarExclusao() {
+    // aqui você chama a lógica para excluir
+    this.electronService.excluirHost(this.grupoAtual.titulo, this.hostAntigo).then(async sucess => {
+      this.hostSalvo.emit();
+      this.fecharModal();
+    }, err => {
+      this.modalTitle = 'Erro ao excluir host';
+      this.mensagemErro = err;
+      this.erroModal.open();
+    });
   }
 
 }

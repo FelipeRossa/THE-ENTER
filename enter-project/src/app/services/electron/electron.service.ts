@@ -62,4 +62,12 @@ export class ElectronService {
     return this.ipcRenderer.invoke('grupo:salvar', grupoAntigo, grupoNovo);
   }
 
+  excluirHost(grupoTitulo: string, host: any): Promise<any> {
+    return this.ipcRenderer.invoke('excluir-host', grupoTitulo, host);
+  }
+
+  excluirGrupo(grupo: any): Promise<any> {
+    return this.ipcRenderer.invoke('excluir-grupo', grupo);
+  }
+
 }

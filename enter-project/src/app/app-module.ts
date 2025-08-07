@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { ErrorModalComponent } from './shared/error-modal.component/error-modal.component';
 import { CadastroHostsComponent } from './pages/hosts/cadastro/cadastro-hosts.component/cadastro-hosts.component';
 import { CadastroGrupoHostComponent } from './pages/hosts/cadastro/cadastro-grupo-host.component/cadastro-grupo-host.component';
+import { ModalConfirmacaoComponent } from './shared/modal-confirmacao.component/modal-confirmacao.component';
 
 @NgModule({
   declarations: [
@@ -20,12 +21,13 @@ import { CadastroGrupoHostComponent } from './pages/hosts/cadastro/cadastro-grup
     ErrorModalComponent,
     CadastroHostsComponent,
     CadastroGrupoHostComponent,
+    ModalConfirmacaoComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-  ],
+],
   providers: [
     provideBrowserGlobalErrorListeners()
   ],

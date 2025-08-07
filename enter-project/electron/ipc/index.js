@@ -43,6 +43,15 @@ function registerIpcHandlers() {
       throw err;
     }
   });
+
+  ipcMain.handle('excluir-host', async (event, grupoTitulo, host) => {
+    return hostsService.excluirHost(grupoTitulo, host);
+  });
+
+  ipcMain.handle('excluir-grupo', async (event, grupo) => {
+    return hostsService.excluirGrupo(grupo);
+  });
+
 }
 
 module.exports = { registerIpcHandlers };

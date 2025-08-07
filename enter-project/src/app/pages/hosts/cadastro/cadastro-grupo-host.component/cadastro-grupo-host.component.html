@@ -14,9 +14,15 @@
                     [ngStyle]="{ 'background-color': grupo.corExadecimal || '#0d6efd' }" (click)="adicionarGrupo()">
                     {{!modoEdicao ? 'Adicionar Grupo e CriarNovo Host' : 'Salvar'}}
                 </button>
+                <button *ngIf="modoEdicao" type="button" class="btn btn-danger" (click)="excluirGrupo()">
+                    <i class="bi bi-trash"></i>
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <app-error-modal [modalTitleErr]="modalTitle" [mensagemErr]="mensagemErro" #erroModal></app-error-modal>
+
+<app-modal-confirmacao [modalTitle]="'Excluir Grupo'" [mensagem]="'Tem certeza que deseja excluir este grupo?'"
+    (onConfirm)="onConfirmarExclusao()" #modalConfirmacao></app-modal-confirmacao>

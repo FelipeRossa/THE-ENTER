@@ -3,6 +3,7 @@ import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular
 import * as bootstrap from 'bootstrap';
 import { GrupoHosts } from '../../../../models/GrupoHosts';
 import { ElectronService } from '../../../../services/electron/electron.service';
+import { ModalConfirmacaoComponent } from '../../../../shared/modal-confirmacao.component/modal-confirmacao.component';
 
 @Component({
   selector: 'app-cadastro-grupo-host',
@@ -23,6 +24,8 @@ export class CadastroGrupoHostComponent {
   modalTitle = 'Erro';
   mensagemErro = '';
 
+  @ViewChild('modalConfirmacao') modalConfirmacao!: ModalConfirmacaoComponent;
+
   private modalInstance: any;
 
   modoEdicao = false;
@@ -34,8 +37,12 @@ export class CadastroGrupoHostComponent {
 
   abrirModal(grupoEdicao?: GrupoHosts): void {
     this.modoEdicao = !!grupoEdicao;
-    
-    if (grupoEdicao)  {
+
+    if (grupoEdicao?.titulo == 'SGD') {
+      return;
+    }
+
+    if (grupoEdicao) {
       this.grupo = { ...grupoEdicao };
       this.grupoAntigo = { ...grupoEdicao };
     } else {
@@ -62,14 +69,29 @@ export class CadastroGrupoHostComponent {
       } else {
         this.grupoCriado.emit({ ...this.grupo });
       }
-      
+
     }, err => {
       this.modalTitle = 'Erro ao atualizar host';
       this.mensagemErro = err;
       this.erroModal.open();
     });
+  }
 
-    
+  excluirGrupo() {
+    this.modalConfirmacao.open();
+  }
+
+  onConfirmarExclusao() {
+    // aqui você chama a lógica para excluir
+    this.electronService.excluirGrupo(this.grupoAntigo as GrupoHosts).then(async sucess => {
+      this.modalInstance.hide();
+      if (this.modoEdicao)
+        this.grupoCriado.emit();
+    }, err => {
+      this.modalTitle = 'Erro ao excluir grupo';
+      this.mensagemErro = err;
+      this.erroModal.open();
+    });
   }
 
 }

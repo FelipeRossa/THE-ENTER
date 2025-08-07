@@ -37,13 +37,20 @@
           <input type="text" class="form-control" maxlength="15" [(ngModel)]="host.comentario">
         </div>
 
-        <div class="mb-2">
-          <label class="form-label">Cor</label>
-          <input type="color" class="form-control form-control-color" [(ngModel)]="host.corExadecimal">
+        <div class="mb-2 d-flex align-items-center justify-content-between gap-3">
+          <div style="flex: 1">
+            <label class="form-label">Cor</label>
+            <input type="color" class="form-control form-control-color" [(ngModel)]="host.corExadecimal">
+          </div>
+
+
         </div>
 
-        <div class="d-grid">
+        <div class="mb-2 d-flex align-items-center justify-content-between gap-3">
           <button class="btn btn-success" (click)="salvar()">Salvar</button>
+          <button *ngIf="modoEdicao" type="button" class="btn btn-danger" (click)="excluirHost()">
+            <i class="bi bi-trash"></i>
+          </button>
         </div>
       </div>
     </div>
@@ -51,3 +58,6 @@
 </div>
 
 <app-error-modal [modalTitleErr]="modalTitle" [mensagemErr]="mensagemErro" #erroModal></app-error-modal>
+
+<app-modal-confirmacao [modalTitle]="'Excluir Host'" [mensagem]="'Tem certeza que deseja excluir este host?'"
+  (onConfirm)="onConfirmarExclusao()" #modalConfirmacao></app-modal-confirmacao>

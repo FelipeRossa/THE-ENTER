@@ -329,8 +329,6 @@ function salvarGrupo(grupoAntigo, grupoNovo) {
 }
 
 function validarGrupoUnico(grupoTitulo, tituloGgrupoAntigo = null) {
-  const fs = require('fs');
-  const HOSTS_PATH = 'C:/Windows/System32/drivers/etc/hosts';
   const content = fs.readFileSync(HOSTS_PATH, 'utf8');
   const lines = content.split(/\r?\n/);
 
@@ -356,11 +354,113 @@ function validarGrupoUnico(grupoTitulo, tituloGgrupoAntigo = null) {
   }
 }
 
+
+function excluirHost(grupoTitulo, hostParaExcluir) {
+  try {
+    const content = fs.readFileSync(HOSTS_PATH, 'utf8');
+    const lines = content.split(/\r?\n/);
+
+    const novaLista = [];
+    let inGrupo = false;
+
+    const grupoRegex = new RegExp(`^#\\s+\\[#${grupoTitulo}\\s+#([A-Fa-f0-9]{6})\\]$`);
+    const hostRegex = new RegExp(
+      `^#?\\s*${escapeReg(hostParaExcluir.ip)}\\s+${escapeReg(hostParaExcluir.nmHost)}(\\s+#.*)?(\\s+##[A-Fa-f0-9]{6})?$`,
+      'i'
+    );
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      if (grupoTitulo === 'SGD') {
+        // Sem grupo definido, apenas remove linha correspondente
+        if (!hostRegex.test(line)) {
+          novaLista.push(line);
+        }
+        continue;
+      }
+
+      // Grupo definido
+      if (grupoRegex.test(line)) {
+        inGrupo = true;
+        novaLista.push(line);
+        continue;
+      }
+
+      // Sai do grupo ao encontrar outro grupo
+      if (inGrupo && /^#\s+\[#.+\s+#([A-Fa-f0-9]{6})\]$/.test(line)) {
+        inGrupo = false;
+        novaLista.push(line);
+        continue;
+      }
+
+      if (inGrupo) {
+        // Estamos dentro do grupo correto
+        if (!hostRegex.test(line)) {
+          novaLista.push(line);
+        }
+        continue;
+      }
+
+      // Fora de qualquer grupo
+      novaLista.push(line);
+    }
+
+    fs.writeFileSync(HOSTS_PATH, novaLista.join('\n'), 'utf8');
+    return true;
+  } catch (err) {
+    console.error(err);
+    throw err.toString();
+  }
+}
+
+// Escape de pontos e hífens para regex
+function escapeReg(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function excluirGrupo(grupo) {
+  try {
+    const content = fs.readFileSync(HOSTS_PATH, 'utf8');
+    const lines = content.split(/\r?\n/);
+
+    const grupoRegex = new RegExp(`^#\\s+\\[#${grupo.titulo}\\s+#([A-Fa-f0-9]{6})\\]$`);
+    const novaLista = [];
+    let inGrupo = false;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      if (grupoRegex.test(line)) {
+        inGrupo = true; // Início do grupo
+        continue; // Pula a linha do grupo
+      }
+
+      if (inGrupo && /^#\s+\[#.+\s+#([A-Fa-f0-9]{6})\]$/.test(line)) {
+        inGrupo = false; // Fim do grupo
+        continue; // Pula a linha do próximo grupo
+      }
+
+      if (!inGrupo) {
+        novaLista.push(line); // Mantém linhas fora do grupo
+      }
+    }
+
+    fs.writeFileSync(HOSTS_PATH, novaLista.join('\n'), 'utf8');
+    return true;
+  } catch (err) {
+    console.error(err);
+    throw err.toString();
+  }
+}
+
 // Exporta as funções que desejar
 module.exports = {
   getHostsGroup,
   ligarDesligarHost,
   ligarDesligarGrupo,
   salvar,
-  salvarGrupo
+  salvarGrupo,
+  excluirHost,
+  excluirGrupo
 };
