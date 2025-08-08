@@ -295,7 +295,7 @@ function salvarGrupo(grupoAntigo, grupoNovo) {
   const lines = content.split(/\r?\n/);
 
   // valida duplicidade
-  validarGrupoUnico(grupoNovo.titulo, grupoAntigo.titulo);
+  validarGrupoUnico(grupoNovo.titulo, grupoAntigo?.titulo);
 
   const novaLinhaGrupo = `# [#${grupoNovo.titulo} ${grupoNovo.corExadecimal}]`;
 
