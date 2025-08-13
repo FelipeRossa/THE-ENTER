@@ -454,6 +454,11 @@ function excluirGrupo(grupo) {
   }
 }
 
+function vincularHostGrupo(grupo, host) {
+  excluirHost("SGD", host);
+  salvar(grupo, null, host);
+}
+
 // Exporta as funções que desejar
 module.exports = {
   getHostsGroup,
@@ -462,5 +467,6 @@ module.exports = {
   salvar,
   salvarGrupo,
   excluirHost,
-  excluirGrupo
+  excluirGrupo,
+  vincularHostGrupo
 };

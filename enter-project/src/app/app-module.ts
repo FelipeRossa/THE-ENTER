@@ -11,6 +11,7 @@ import { ErrorModalComponent } from './shared/error-modal.component/error-modal.
 import { CadastroHostsComponent } from './pages/hosts/cadastro/cadastro-hosts.component/cadastro-hosts.component';
 import { CadastroGrupoHostComponent } from './pages/hosts/cadastro/cadastro-grupo-host.component/cadastro-grupo-host.component';
 import { ModalConfirmacaoComponent } from './shared/modal-confirmacao.component/modal-confirmacao.component';
+import { VincularHostGrupoComponent } from './pages/hosts/vincular-host-grupo/vincular-host-grupo.component';
 
 @NgModule({
   declarations: [
@@ -22,12 +23,13 @@ import { ModalConfirmacaoComponent } from './shared/modal-confirmacao.component/
     CadastroHostsComponent,
     CadastroGrupoHostComponent,
     ModalConfirmacaoComponent,
+    VincularHostGrupoComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-],
+  ],
   providers: [
     provideBrowserGlobalErrorListeners()
   ],

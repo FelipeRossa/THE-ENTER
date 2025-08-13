@@ -70,4 +70,8 @@ export class ElectronService {
     return this.ipcRenderer.invoke('excluir-grupo', grupo);
   }
 
+  vincularGrupoHost(grupoSelecionado: GrupoHosts, hostVincular: Host): Promise<any> {
+    return this.ipcRenderer.invoke('vincular-host-grupo', grupoSelecionado, hostVincular);
+  }
+
 }

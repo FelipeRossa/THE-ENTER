@@ -1,0 +1,31 @@
+<!-- Modal Vincular Host -->
+<div class="modal fade" id="modalVincularHostGrupo" tabindex="-1" aria-labelledby="vincularHostLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="vincularHostLabel">Vincular host</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+
+      <div class="modal-body">
+        <p>Vincular host <strong>{{ hostVincular?.nmHost }}</strong></p>
+
+        <div class="mb-3">
+          <label for="grupoSelect" class="form-label">Selecione o grupo</label>
+          <select id="grupoSelect" class="form-select" [(ngModel)]="grupoSelecionado">
+            <option *ngFor="let g of groupsHosts" [value]="g.titulo">{{ g.titulo }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="vincular()">Salvar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<app-error-modal [modalTitleErr]="modalTitle" [mensagemErr]="mensagemErro" #erroModal></app-error-modal>

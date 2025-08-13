@@ -52,6 +52,10 @@ function registerIpcHandlers() {
     return hostsService.excluirGrupo(grupo);
   });
 
+  ipcMain.handle('vincular-host-grupo', async (event, grupo, host) => {
+    return hostsService.vincularHostGrupo(grupo, host);
+  });
+
 }
 
 module.exports = { registerIpcHandlers };
