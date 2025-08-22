@@ -50,8 +50,8 @@ export class ElectronService {
     });
   }
 
-  ligarDesligarGrupo(grupoTitulo: string, ativar: boolean): Promise<boolean> {
-    return this.ipcRenderer.invoke('host:toggle-group', grupoTitulo, ativar);
+  ligarDesligarGrupo(grupoTitulo: string, padraoLinear: boolean, ativar: boolean): Promise<boolean> {
+    return this.ipcRenderer.invoke('host:toggle-group', grupoTitulo, padraoLinear, ativar);
   }
 
   salvarHost(grupoTitulo: string, hostAntigo: Host, novoHost: Host): Promise<boolean> {

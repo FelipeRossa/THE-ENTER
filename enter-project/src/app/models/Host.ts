@@ -5,5 +5,6 @@ export class Host {
     public nmHost: string = '';
     public comentario: string = '';
     public corExadecimal: string = '';
+    public padraoLinear: boolean = false;
 
 }

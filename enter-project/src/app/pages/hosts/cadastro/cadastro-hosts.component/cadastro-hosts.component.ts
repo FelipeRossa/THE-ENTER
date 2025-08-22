@@ -28,12 +28,13 @@ export class CadastroHostsComponent implements AfterViewInit {
 
   hostAntigo: Host | undefined = undefined;
 
-  host = {
+  host: Host = {
     onOff: true,
     ip: '',
     nmHost: '',
     comentario: '',
-    corExadecimal: '#cccccc'
+    corExadecimal: '#cccccc',
+    padraoLinear: false
   };
 
   constructor(private electronService: ElectronService) {
@@ -58,7 +59,9 @@ export class CadastroHostsComponent implements AfterViewInit {
         ip: '',
         nmHost: grupo.titulo || '',
         comentario: '',
-        corExadecimal: grupo.corExadecimal || '#ffffff'
+        corExadecimal: grupo.corExadecimal || '#ffffff',
+        padraoLinear: false
+
       };
       this.hostAntigo = undefined;
     }

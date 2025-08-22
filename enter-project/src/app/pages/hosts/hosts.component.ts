@@ -57,7 +57,8 @@ export class HostsComponent implements OnInit {
   ligaDesligaGrupo(grupo: GrupoHosts) {
     const ativar = !this.grupoAtivo(grupo); // Se está ativo, desliga. Se está desligado, ativa.
 
-    this.electronService.ligarDesligarGrupo(grupo.titulo, ativar).then(async () => {
+    const grupoAlterar = !grupo.hosts[0]?.padraoLinear ? grupo.titulo : grupo.hosts[0].ip;
+    this.electronService.ligarDesligarGrupo(grupoAlterar, grupo.hosts[0]?.padraoLinear, ativar).then(async () => {
       this.loadHosts();
     }).catch(err => {
       this.modalTitle = 'Erro ao atualizar grupo: ' + grupo.titulo;

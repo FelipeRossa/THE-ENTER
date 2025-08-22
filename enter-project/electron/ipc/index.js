@@ -17,9 +17,9 @@ function registerIpcHandlers() {
 
   });
 
-  ipcMain.handle('host:toggle-group', (event, grupoTitulo, ativar) => {
+  ipcMain.handle('host:toggle-group', (event, grupoTitulo, padraoLinear, ativar) => {
     try {
-      hostsService.ligarDesligarGrupo(grupoTitulo, ativar);
+      hostsService.ligarDesligarGrupo(grupoTitulo, padraoLinear, ativar);
       return true;
     } catch (err) {
       throw err;

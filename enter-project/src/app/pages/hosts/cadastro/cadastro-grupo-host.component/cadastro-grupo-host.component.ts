@@ -36,11 +36,14 @@ export class CadastroGrupoHostComponent {
   }
 
   abrirModal(grupoEdicao?: GrupoHosts): void {
-    this.modoEdicao = !!grupoEdicao;
 
-    if (grupoEdicao?.titulo == 'SGD') {
+    if (grupoEdicao?.titulo == 'SGD'|| (grupoEdicao?.hosts && grupoEdicao.hosts.length > 0 && grupoEdicao.hosts[0].padraoLinear)) {
       return;
     }
+    
+    this.modoEdicao = !!grupoEdicao;
+
+    
 
     if (grupoEdicao) {
       this.grupo = { ...grupoEdicao };

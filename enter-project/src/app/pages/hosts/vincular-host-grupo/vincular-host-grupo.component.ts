@@ -30,18 +30,27 @@ export class VincularHostGrupoComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    if (this.modalRef) {
+      this.modalInstance = new bootstrap.Modal(this.modalRef.nativeElement);
+    }
+    
+    this.modalRef.nativeElement.addEventListener('hidden.bs.modal', () => {
+      this.hostVincular = null;
+      this.grupoSelecionado = null;
+      this.groupsHosts = [];
+      this.hostVinculado.emit();
+    });
   }
 
   abrirModal(host: any, grupos: GrupoHosts[]) {
 
     this.hostVincular = host;
     for (let grupo of grupos) {
-      if (grupo.titulo != 'SGD' ) {
+      if (grupo.titulo != 'SGD') {
         this.groupsHosts.push(grupo);
       }
     }
 
-    this.modalInstance = new bootstrap.Modal(document.getElementById('modalVincularHostGrupo'));
     this.modalInstance?.show();
   }
 
@@ -55,12 +64,7 @@ export class VincularHostGrupoComponent implements AfterViewInit {
     }
 
     this.electronService.vincularGrupoHost(this.grupoSelecionado, this.hostVincular).then(() => {
-      this.hostVinculado.emit();
       this.fecharModal();
-      this.hostVincular = null;
-      this.grupoSelecionado = null;
-      this.groupsHosts = [];
-
     }).catch(err => {
       this.modalTitle = 'Erro ao atualizar host';
       this.mensagemErro = err;

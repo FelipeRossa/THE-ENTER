@@ -17,14 +17,14 @@
           }"></i>
 
           <label class="switch" style="gap: 0.5rem;">
-            <input type="checkbox" [(ngModel)]="host.onOff" id="ativoSwitch">
+            <input type="checkbox" [(ngModel)]="host.onOff" id="ativoSwitch" [disabled]="host.padraoLinear">
             <span class="slider round"></span>
           </label>
         </div>
 
         <div class="mb-2">
           <label for="ip" class="form-label">IP</label>
-          <input type="text" class="form-control" [(ngModel)]="host.ip" placeholder="xxx.xxx.xxx.xxx">
+          <input type="text" class="form-control" [(ngModel)]="host.ip" placeholder="xxx.xxx.xxx.xxx" [disabled]="host.padraoLinear">
         </div>
 
         <div class="mb-2">
@@ -34,16 +34,14 @@
 
         <div class="mb-2">
           <label for="comentario" class="form-label">Comentário</label>
-          <input type="text" class="form-control" maxlength="15" [(ngModel)]="host.comentario">
+          <input type="text" class="form-control" maxlength="15" [(ngModel)]="host.comentario" [disabled]="host.padraoLinear">
         </div>
 
         <div class="mb-2 d-flex align-items-center justify-content-between gap-3">
           <div style="flex: 1">
             <label class="form-label">Cor</label>
-            <input type="color" class="form-control form-control-color" [(ngModel)]="host.corExadecimal">
+            <input type="color" class="form-control form-control-color" [(ngModel)]="host.corExadecimal" [disabled]="host.padraoLinear">
           </div>
-
-
         </div>
 
         <div class="mb-2 d-flex align-items-center justify-content-between gap-3">

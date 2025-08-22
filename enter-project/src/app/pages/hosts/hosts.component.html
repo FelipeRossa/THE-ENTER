@@ -16,7 +16,7 @@
                         <input type="checkbox" [(ngModel)]="grupo.onOff" (click)="ligaDesligaGrupo(grupo)">
                         <span class="slider round"></span>
                     </label>
-                    <button (click)="modalCadastroHost.abrirModal(grupo)" class="btn btn-sm btn-outline-secondary">
+                    <button *ngIf="!grupo.hosts[0].padraoLinear" (click)="modalCadastroHost.abrirModal(grupo)" class="btn btn-sm btn-outline-secondary">
                         Novo Host
                     </button>
                 </span>
@@ -29,7 +29,7 @@
                     <tr *ngFor="let host of grupo.hosts" (click)="modalCadastroHost.abrirModal(grupo, host)">
                         <td class="align-items-center gap-2">
                             <div class="switch-container" (click)="$event.stopPropagation()">
-                                <label class="switch" style="gap: 0.5rem;">
+                                <label class="switch" style="gap: 0.5rem;" *ngIf="!host.padraoLinear">
                                     <input type="checkbox" [checked]="host.onOff"
                                         (click)="ligaDesligaHost(host, grupo)">
                                     <span class="slider round"></span>
@@ -43,12 +43,15 @@
                             </div>
 
                         </td>
-                        <td>{{ host.ip }}</td>
+                        <td>
+                            <span [ngClass]="{'background-color-multiples-hosts badge':host.padraoLinear}">{{ host.ip}}</span>
+                        </td>
                         <td style="justify-content: start; display: flex">{{ host.nmHost }}</td>
                         <td><span class="badge" [ngStyle]="{ 'background-color': host.corExadecimal }"
                                 style="color: black;">{{ host.comentario }}</span></td>
                         <td *ngIf="grupo.titulo == 'SGD'">
-                            <button (click)="$event.stopPropagation(); modalVincularHost.abrirModal(host, groupsHosts)" class="btn btn-sm btn-outline-secondary">
+                            <button (click)="$event.stopPropagation(); modalVincularHost.abrirModal(host, groupsHosts)"
+                                class="btn btn-sm btn-outline-secondary">
                                 Vincular a grupo
                             </button>
                         </td>
