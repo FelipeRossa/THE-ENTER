@@ -16,7 +16,8 @@
                         <input type="checkbox" [(ngModel)]="grupo.onOff" (click)="ligaDesligaGrupo(grupo)">
                         <span class="slider round"></span>
                     </label>
-                    <button *ngIf="!grupo.hosts[0].padraoLinear" (click)="modalCadastroHost.abrirModal(grupo)" class="btn btn-sm btn-outline-secondary">
+                    <button *ngIf="!grupo.hosts[0].padraoLinear" (click)="modalCadastroHost.abrirModal(grupo)"
+                        class="btn btn-sm btn-outline-secondary">
                         Novo Host
                     </button>
                 </span>
@@ -26,7 +27,7 @@
                 <thead>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let host of grupo.hosts" (click)="modalCadastroHost.abrirModal(grupo, host)">
+                    <tr *ngFor="let host of grupo.hosts">
                         <td class="align-items-center gap-2">
                             <div class="switch-container" (click)="$event.stopPropagation()">
                                 <label class="switch" style="gap: 0.5rem;" *ngIf="!host.padraoLinear">
@@ -44,16 +45,47 @@
 
                         </td>
                         <td>
-                            <span [ngClass]="{'background-color-multiples-hosts badge':host.padraoLinear}">{{ host.ip}}</span>
+                            <span [ngClass]="{'background-color-multiples-hosts badge':host.padraoLinear}">{{
+                                host.ip}}</span>
                         </td>
-                        <td style="justify-content: start; display: flex">{{ host.nmHost }}</td>
+                        <td style="justify-content: start; display: flex; cursor: pointer;"
+                            (click)="modalCadastroHost.abrirModal(grupo, host)">{{ host.nmHost }}</td>
                         <td><span class="badge" [ngStyle]="{ 'background-color': host.corExadecimal }"
                                 style="color: black;">{{ host.comentario }}</span></td>
+
                         <td *ngIf="grupo.titulo == 'SGD'">
                             <button (click)="$event.stopPropagation(); modalVincularHost.abrirModal(host, groupsHosts)"
                                 class="btn btn-sm btn-outline-secondary">
                                 Vincular a grupo
                             </button>
+                        </td>
+
+                        <td class="text-end">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false" >
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+
+                                <ul class="dropdown-menu dropdown-menu-end position-fixed">
+                                    <li>
+                                        <button class="dropdown-item" (click)="pingHost(host)">
+                                            <i class="bi bi-wifi me-2"></i> Ping
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item" (click)="abrirAnonimo(host.nmHost)">
+                                            <i class="bi bi-incognito me-2"></i> Abrir em aba anônima
+                                        </button>
+                                    </li> 
+
+                                    <li>
+                                        <button class="dropdown-item" (click)="abrirChrome(host.nmHost)">
+                                            <i class="bi bi bi-browser-chrome me-2"></i> Abrir no chrome
+                                        </button>
+                                    </li> 
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                 </tbody>

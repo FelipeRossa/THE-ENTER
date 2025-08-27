@@ -1,7 +1,11 @@
+
 // variavel para manipular arquivos no sistema
 const fs = require('fs');
 
 const HOSTS_PATH = 'C:\\Windows\\System32\\drivers\\etc\\hosts';
+
+const { exec } = require('child_process');
+const path = require("path");
 
 function getHostsGroup() {
   try {
@@ -232,8 +236,6 @@ function ligarDesligarGrupo(grupoTitulo, padraoLinear, ativar) {
 
 function salvar(grupoTitulo, hostAntigo, novoHost) {
   try {
-    const fs = require('fs');
-    const HOSTS_PATH = 'C:/Windows/System32/drivers/etc/hosts';
 
     let content = fs.readFileSync(HOSTS_PATH, 'utf8');
     let lines = content.split(/\r?\n/);
@@ -573,6 +575,31 @@ function vincularHostGrupo(grupo, host) {
   salvar(grupo, null, host);
 }
 
+function pingHost(host) {
+  const scriptPath = path.join(__dirname, "scripts", "pingHost.bat");
+  const comando = `start cmd.exe /K "${scriptPath} ${host}"`;
+
+  exec(comando, (erro) => {
+    if (erro) {
+      console.error('Erro ao executar o comando:', erro);
+    }
+  });
+}
+
+// Função para abrir o Chrome em modo anônimo
+function abrirChrome(url, anonimo) {
+  const comando = `start chrome ` + (anonimo ? `--incognito` : ``) + ` "${url}"`;
+
+  exec(comando, (erro) => {
+    if (erro) {
+      console.error('Erro ao abrir o Chrome:', erro);
+    } else {
+      console.log('Chrome aberto em modo anônimo com a URL:', url);
+    }
+  });
+}
+
+
 // Exporta as funções que desejar
 module.exports = {
   getHostsGroup,
@@ -582,5 +609,8 @@ module.exports = {
   salvarGrupo,
   excluirHost,
   excluirGrupo,
-  vincularHostGrupo
+  vincularHostGrupo,
+  pingHost,
+  abrirChrome
+
 };

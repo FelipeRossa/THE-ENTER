@@ -2,7 +2,11 @@ const { ipcMain } = require('electron');
 const hostsService = require('../services/hosts.service');
 
 function registerIpcHandlers() {
-  //disponibiliza o serviço da hoosts service
+  //disponibiliza os serviço da hosts.service
+  registerHostsServiceIpcHandlers();
+}
+
+function registerHostsServiceIpcHandlers() {
   ipcMain.handle('hosts:get', async () => {
     return hostsService.getHostsGroup();
   });
@@ -56,6 +60,15 @@ function registerIpcHandlers() {
     return hostsService.vincularHostGrupo(grupo, host);
   });
 
+  ipcMain.handle('host:ping-host', async (event, host) => {
+    return hostsService.pingHost(host);
+  });
+
+  ipcMain.handle('host:abrir-chrome-anonimo', async (event, url, abaNonima) => {
+    return hostsService.abrirChrome(url, abaNonima);
+  });
+
 }
+
 
 module.exports = { registerIpcHandlers };

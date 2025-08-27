@@ -74,4 +74,12 @@ export class ElectronService {
     return this.ipcRenderer.invoke('vincular-host-grupo', grupoSelecionado, hostVincular);
   }
 
+  pingHost(host: string): Promise<string> {
+    return this.ipcRenderer.invoke('host:ping-host', host);
+  }
+
+  abrirChrome(url: string, abaAnonima: boolean): Promise<void> {
+    return this.ipcRenderer.invoke('host:abrir-chrome-anonimo', url, abaAnonima);
+  }
+
 }

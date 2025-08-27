@@ -3,6 +3,7 @@ import { ElectronService } from '../../services/electron/electron.service';
 import { GrupoHosts } from '../../models/GrupoHosts';
 import { Host } from '../../models/Host';
 import { CadastroHostsComponent } from './cadastro/cadastro-hosts.component/cadastro-hosts.component';
+import { Dropdown } from 'bootstrap';
 
 @Component({
   selector: 'app-hosts.component',
@@ -113,6 +114,18 @@ export class HostsComponent implements OnInit {
     if (novoGrupo != null) {
       this.modalCadastroHost.abrirModal(novoGrupo);
     }
+  }
+
+  pingHost(host: Host) {
+    this.electronService.pingHost(host.nmHost);
+  }
+
+  abrirAnonimo(url: string) {
+    this.electronService.abrirChrome(url, true);
+  }
+
+  abrirChrome(url: string) {
+    this.electronService.abrirChrome(url, false);
   }
 
 }

@@ -91,9 +91,11 @@
       border-bottom: none;
     }
 
-    tr {
-      cursor: pointer;
+    ul.dropdown-menu {
+      position: absolute !important;
+      z-index: 1050; /* maior que o da tabela */
     }
+
   }
 
   .btn {
