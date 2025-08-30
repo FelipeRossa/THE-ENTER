@@ -5,12 +5,13 @@ const fs = require('fs');
 const HOSTS_PATH = 'C:\\Windows\\System32\\drivers\\etc\\hosts';
 
 const { exec } = require('child_process');
+const { spawn } = require("child_process");
 const path = require("path");
+const { app } = require("electron");
 
 function getHostsGroup() {
   try {
     // obtem o conteúdo de um arquivo
-    console.log("depurando");
     const contentHosts = fs.readFileSync(HOSTS_PATH, 'utf8');
     return parseHostsContent(contentHosts);
 
@@ -84,6 +85,7 @@ function parseHostsContent(contentHosts) {
 
       fallbackGroup.hosts.push(host);
       hasFallbackHosts = true;
+      continue;
     }
 
     const match = line.match(multipleHostsRegex);
@@ -576,14 +578,13 @@ function vincularHostGrupo(grupo, host) {
 }
 
 function pingHost(host) {
-  const scriptPath = path.join(__dirname, "scripts", "pingHost.bat");
-  const comando = `start cmd.exe /K "${scriptPath} ${host}"`;
+  const scriptPath = path.join(process.resourcesPath, "scripts", "pingHost.bat");
 
-  exec(comando, (erro) => {
-    if (erro) {
-      console.error('Erro ao executar o comando:', erro);
-    }
-  });
+  spawn("cmd.exe", ["/K", `"${scriptPath}"`, host], {
+    detached: true,
+    stdio: "ignore",
+    shell: true
+  }).unref();
 }
 
 // Função para abrir o Chrome em modo anônimo
