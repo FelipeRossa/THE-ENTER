@@ -16,7 +16,7 @@
                         <input type="checkbox" [(ngModel)]="grupo.onOff" (click)="ligaDesligaGrupo(grupo)">
                         <span class="slider round"></span>
                     </label>
-                    <button *ngIf="!grupo.hosts[0].padraoLinear" (click)="modalCadastroHost.abrirModal(grupo)"
+                    <button *ngIf="!grupo.hosts[0]?.padraoLinear" (click)="modalCadastroHost.abrirModal(grupo)"
                         class="btn btn-sm btn-outline-secondary">
                         Novo Host
                     </button>
