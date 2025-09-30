@@ -594,8 +594,6 @@ function abrirChrome(url, anonimo) {
   exec(comando, (erro) => {
     if (erro) {
       console.error('Erro ao abrir o Chrome:', erro);
-    } else {
-      console.log('Chrome aberto em modo anônimo com a URL:', url);
     }
   });
 }

@@ -5,3 +5,23 @@
         <span>{{ item.label }}</span>
     </div>
 </div>
+
+<div class="search-bar" #searchBar [class.open]="isSearchOpen">
+
+    <ul class="search-results" *ngIf="filteredItems.length > 0">
+        <li *ngFor="let item of filteredItems; let i = index"
+            (click)="selectedIndex = i; selectOption()"
+            [class.selected]="i === selectedIndex">
+            <i [class]="item.icon"></i>
+            <span> {{ item.label }}</span>
+        </li>
+    </ul>
+    <input
+      #searchInput
+      type="text"
+      placeholder="Pesquisar..."
+      [(ngModel)]="searchText"
+      (input)="onSearchChange()"
+    />
+    
+</div>
