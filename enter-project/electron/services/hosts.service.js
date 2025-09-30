@@ -64,7 +64,8 @@ function parseHostsContent(contentHosts) {
         ip,
         nmHost,
         comentario,
-        corExadecimal: `#${corHex}`
+        corExadecimal: `#${corHex}`,
+        padraoLinear: false
       };
       currentGroup.hosts.push(host);
       continue;
@@ -80,7 +81,8 @@ function parseHostsContent(contentHosts) {
         ip,
         nmHost,
         comentario: comentario ? comentario : 'SGD',
-        corExadecimal: corHex ? `#${corHex}` : '#d3d3d3'
+        corExadecimal: corHex ? `#${corHex}` : '#d3d3d3',
+        padraoLinear: false
       };
 
       fallbackGroup.hosts.push(host);
