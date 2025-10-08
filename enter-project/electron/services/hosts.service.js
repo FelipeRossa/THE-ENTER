@@ -7,8 +7,11 @@ const HOSTS_PATH = 'C:\\Windows\\System32\\drivers\\etc\\hosts';
 const { exec } = require('child_process');
 const { spawn } = require("child_process");
 const path = require("path");
-const { app } = require("electron");
 
+// Responsável pela manipulação/organização dos hosts do windows
+
+
+// Obtem o arquivo hosts e converte para uma lista de objetos;
 function getHostsGroup() {
   try {
     // obtem o conteúdo de um arquivo
@@ -20,15 +23,16 @@ function getHostsGroup() {
   }
 }
 
+// Filtra e organiza os hosts para apresentar na tela
 function parseHostsContent(contentHosts) {
   const lines = contentHosts.trim().split(/\r?\n/);
   const groups = [];
   let currentGroup = null;
 
-  const groupRegex = /^#\s+\[#(.+?)\s+#([A-Fa-f0-9]{6})\]$/;
-  const hostRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)\s+#(.*?)\s+##([A-Fa-f0-9]{6})$/;
-  const fallbackRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)(?:\s+#([^#]*?))?(?:\s+##([A-Fa-f0-9]{6}))?\s*$/;
-  const multipleHostsRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+((?:[\w.\-]+\s*)+)$/;
+  const groupRegex = /^#\s+\[#(.+?)\s+#([A-Fa-f0-9]{6})\]$/;  // regex para os grupos configurados
+  const hostRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)\s+#(.*?)\s+##([A-Fa-f0-9]{6})$/; // Regex para os hosts configurados de cada grupo
+  const fallbackRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([\w.\-]+)(?:\s+#([^#]*?))?(?:\s+##([A-Fa-f0-9]{6}))?\s*$/; // Regex para hosts normalmente configurados 
+  const multipleHostsRegex = /^(#?)\s*(\d{1,3}(?:\.\d{1,3}){3})\s+((?:[\w.\-]+\s*)+)$/; // regex para multiplos hosts configurados para um ip
 
   // Grupo genérico para hosts fora do padrão
   let fallbackGroup = {
@@ -125,7 +129,7 @@ function parseHostsContent(contentHosts) {
   return groups;
 }
 
-
+// Liga/Desliga um host
 function ligarDesligarHost({ grupoTitulo, ip, nome, onOff }) {
   let content = fs.readFileSync(HOSTS_PATH, 'utf8');
   const lines = content.split('\n');
@@ -164,6 +168,7 @@ function ligarDesligarHost({ grupoTitulo, ip, nome, onOff }) {
   fs.writeFileSync(HOSTS_PATH, update, 'utf8');
 }
 
+// liga / Desliga um grupo inteiro
 function ligarDesligarGrupo(grupoTitulo, padraoLinear, ativar) {
   const content = fs.readFileSync(HOSTS_PATH, 'utf8');
   const lines = content.split('\n');
@@ -238,6 +243,7 @@ function ligarDesligarGrupo(grupoTitulo, padraoLinear, ativar) {
   fs.writeFileSync(HOSTS_PATH, updatedLines.join('\n'), 'utf8');
 }
 
+// Edita ou salva um novo host 
 function salvar(grupoTitulo, hostAntigo, novoHost) {
   try {
 
@@ -379,6 +385,7 @@ function salvar(grupoTitulo, hostAntigo, novoHost) {
   }
 }
 
+// Edita / salva um Grupo
 function salvarGrupo(grupoAntigo, grupoNovo) {
   let content = fs.readFileSync(HOSTS_PATH, 'utf8');
 
@@ -408,7 +415,7 @@ function salvarGrupo(grupoAntigo, grupoNovo) {
     updatedLines.push(line);
   }
 
-  // Se não for edição → adiciona no final
+  // Se não for edição, adiciona no final
   if (!grupoEditado && !grupoAntigo) {
     updatedLines.push('');
     updatedLines.push(novaLinhaGrupo);
@@ -418,6 +425,7 @@ function salvarGrupo(grupoAntigo, grupoNovo) {
 
 }
 
+// Valida para não salvar mais de um grupo com o mesmo nome
 function validarGrupoUnico(grupoTitulo, tituloGgrupoAntigo = null) {
   const content = fs.readFileSync(HOSTS_PATH, 'utf8');
   const lines = content.split(/\r?\n/);
@@ -443,7 +451,6 @@ function validarGrupoUnico(grupoTitulo, tituloGgrupoAntigo = null) {
     throw new Error(`Mais de um grupo já cadastrado com o nome "${grupoTitulo}"`);
   }
 }
-
 
 function excluirHost(grupoTitulo, hostParaExcluir) {
   try {
@@ -574,11 +581,13 @@ function excluirGrupo(grupo) {
   }
 }
 
+// Vincula um host sem grupo definido, a um grupo existente
 function vincularHostGrupo(grupo, host) {
   excluirHost("SGD", host);
   salvar(grupo, null, host);
 }
 
+// Abre um terminal e dispara um ping no host selecionado
 function pingHost(host) {
   const scriptPath = path.join(process.resourcesPath, "scripts", "pingHost.bat");
 
@@ -589,7 +598,7 @@ function pingHost(host) {
   }).unref();
 }
 
-// Função para abrir o Chrome em modo anônimo
+// Função para abrir o Chrome em modo anônimo ou normal
 function abrirChrome(url, anonimo) {
   const comando = `start chrome ` + (anonimo ? `--incognito` : ``) + ` "${url}"`;
 

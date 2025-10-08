@@ -1,3 +1,4 @@
+// ipcMain: permite a comunicação entre o processo principal e os processos de renderização 
 const { ipcMain } = require('electron');
 const hostsService = require('../services/hosts.service');
 
